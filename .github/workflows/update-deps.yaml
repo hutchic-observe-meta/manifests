@@ -1,11 +1,9 @@
 name: Update via Updatecli
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0 0 * * 0'  # Every Sunday at midnight
-  push:
-    branches:
-      - ci/automated-updates
 
 jobs:
   update:
@@ -20,7 +18,10 @@ jobs:
         uses: updatecli/updatecli-action@v2
 
       - name: Run updatecli
-        run: updatecli apply --config updatecli/
+        run: |
+          for config in updatecli/*.yaml; do
+            updatecli apply --config $config
+          done
         env:
           UPDATECLI_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
